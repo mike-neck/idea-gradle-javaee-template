@@ -1,0 +1,156 @@
+apply plugin: 'idea'
+
+ext {
+    jdkLevel = 1.8
+    encoding = 'UTF-8'
+}
+
+version = '0.1'
+
+allprojects {
+    apply plugin: 'idea'
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    tasks.withType(JavaCompile) {
+        it.sourceCompatibility = jdkLevel
+        it.targetCompatibility = jdkLevel
+        it.options.encoding = encoding
+    }
+}
+
+project(':jpa') {
+    dependencies {
+        compile 'javax:javaee-api:7.0'
+        testCompile 'junit:junit:4.12'
+    }
+}
+
+project(':web') {
+    apply plugin: 'war'
+    dependencies {
+        compile project(':jpa')
+        providedCompile 'javax:javaee-api:7.0'
+    }
+    idea {
+        module {
+            iml {
+                withXml {
+                    def node = it.asNode()
+                    def f = new NodeBuilder()
+                    def facet = f.component(name: 'FacetManager') {
+                        facet(type: 'web', name: 'Web') {
+                            configuration {
+                                descriptors {
+                                    deploymentDescriptor(name: 'web.xml', url: "file://${projectDir}/src/main/webapp/WEB-INF/web.xml")
+                                }
+                                webroots {
+                                    root(url: "file://${projectDir}/src/main/webapp", relative: '/')
+                                }
+                                sourceRoots {
+                                    ['java', 'resources'].each {
+                                        root(url: "file://${projectDir}/src/main/${it}")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    node.append(facet)
+                }
+            }
+        }
+    }
+}
+
+project(':app') {
+    apply plugin: 'ear'
+    dependencies {
+        deploy project(':web')
+    }
+    idea {
+        module {
+            iml {
+                withXml {
+                    def node = it.asNode()
+                    def f = new NodeBuilder()
+                    def facet = f.component(name: 'FacetManager') {
+                        facet(type: 'javaeeApplication', name: 'javaee') {
+                            configuration()
+                        }
+                    }
+                    node.append(facet)
+                }
+            }
+        }
+    }
+}
+
+idea {
+    project {
+        languageLevel = jdkLevel
+        ipr {
+            withXml {xml ->
+                def node = xml.asNode()
+                def f = new NodeBuilder()
+
+                def component = f.component(name: 'ArtifactManager') {
+                    artifact(type: 'exploded-ear', name: 'javaee') {
+                        'output-path' "${projectDir}/out/artifacts/__APP_NAME__"
+                        root(id: 'root') {
+                            element(id: 'javaee-facet-resources', facet: 'app/javaeeApplication/javaee')
+                            element(id: 'artifact', 'artifact-name': 'web')
+                        }
+                    }
+                    artifact(type: 'exploded-war', name: 'web') {
+                        'output-path' "${projectDir}/out/artifacts/web"
+                        root(id: 'root') {
+                            element(id: 'javaee-facet-resources', facet:'web/web/Web')
+                            element(id: 'directory', name: 'WEB-INF') {
+                                element(id: 'directory', name: 'classes') {
+                                    element(id: 'module-output', name: 'web')
+                                    element(id: 'module-output', name: 'jpa')
+                                }
+                                element(id: 'directory', name: 'lib') {
+                                    project(':jpa').configurations.compile.findAll{!it.name.contains('javaee-api')}.each {
+                                        element(id: 'file-copy', path: it)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                node.append(component)
+
+
+                def g = new NodeBuilder()
+                def gradleProject = g.component(name: 'GradleSettings') {
+                    option(name: 'linkedExternalProjectsSettings') {
+                        GradleProjectSettings {
+                            [
+                                    [name: 'distributionType', value: 'DEFAULT_WRAPPED'],
+                                    [name: 'externalProjectPath', value: projectDir],
+                                    [name: 'gradleHome', value: '$USER_HOME$/.gvm/gradle/current']
+                            ].each {
+                                option(name: it.name, value: it.value)
+                            }
+                            option(name: 'modules') {
+                                set {
+                                    option(value: projectDir)
+                                    [project(':app'), project(':jpa'), project(':web')].each {
+                                        option(value: it.projectDir)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                node.append(gradleProject)
+            }
+        }
+    }
+}
+

@@ -1,0 +1,3 @@
+rootProject.name = __APP_NAME__
+include 'jpa', 'web', 'app'
+
