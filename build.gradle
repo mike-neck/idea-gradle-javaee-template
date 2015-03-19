@@ -29,6 +29,8 @@ allprojects {
     }
 }
 
+task rmDummy(type: RemovingDummyTask)
+
 subprojects {
     apply plugin: 'java'
     tasks.withType(JavaCompile) {
