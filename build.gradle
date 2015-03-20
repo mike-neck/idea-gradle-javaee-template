@@ -116,7 +116,7 @@ idea {
 
                 def component = f.component(name: 'ArtifactManager') {
                     artifact(type: 'exploded-ear', name: 'javaee') {
-                        'output-path' "${projectDir}/out/artifacts/__APP_NAME__"
+                        'output-path' "${projectDir}/out/artifacts/${file('project-name').text}"
                         root(id: 'root') {
                             element(id: 'javaee-facet-resources', facet: 'app/javaeeApplication/javaee')
                             element(id: 'artifact', 'artifact-name': 'web')
@@ -170,4 +170,3 @@ idea {
         }
     }
 }
-

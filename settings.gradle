@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = '__APP_NAME__'
+rootProject.name = file('project-name').text
 include 'jpa', 'web', 'app'
-

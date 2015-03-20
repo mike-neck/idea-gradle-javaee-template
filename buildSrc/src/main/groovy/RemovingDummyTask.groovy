@@ -24,12 +24,13 @@ class RemovingDummyTask extends DefaultTask {
 
     static final String DUMMY_FILE = 'dummy'
 
+    static final String PROJECT_NAME = 'project-name'
+
     static final FileVisitor<Path> VISITOR = [
             postVisitDirectory: {Path dir, IOException e ->
                 if(e != null) throw e
                 CONTINUE
             }, preVisitDirectory: {Path dir, Object attr ->
-                println "visit directory : ${dir}"
                 CONTINUE
             }, visitFile: {Path file, Object attr ->
                 if (file.endsWith(DUMMY_FILE)) {
@@ -50,5 +51,9 @@ class RemovingDummyTask extends DefaultTask {
             def path = d.toPath()
             Files.walkFileTree(path, VISITOR)
         }
+        Path file = getProject().file(PROJECT_NAME).toPath().toAbsolutePath()
+        Path path = file.parent
+        Path root = path.parent
+        getProject().file(PROJECT_NAME).write("${root.relativize(path)}")
     }
 }
