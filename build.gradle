@@ -38,12 +38,15 @@ subprojects {
         it.targetCompatibility = jdkLevel
         it.options.encoding = encoding
     }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+    }
 }
 
 project(':jpa') {
     dependencies {
         compile 'javax:javaee-api:7.0'
-        testCompile 'junit:junit:4.12'
     }
 }
 
