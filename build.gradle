@@ -115,6 +115,9 @@ idea {
         ipr {
             withXml {xml ->
                 def node = xml.asNode()
+
+                node.component.find {it.@name == 'Encoding'}.@native2AsciiForPropertiesFiles = true
+
                 def f = new NodeBuilder()
 
                 def component = f.component(name: 'ArtifactManager') {
