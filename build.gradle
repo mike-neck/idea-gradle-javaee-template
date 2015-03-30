@@ -1,12 +1,12 @@
 /*
  * Copyright 2015Shinya Mochida
- * 
+ *
  * Licensed under the Apache License,Version2.0(the"License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,software
  * Distributed under the License is distributed on an"AS IS"BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,either express or implied.
@@ -86,29 +86,6 @@ project(':web') {
     }
 }
 
-project(':app') {
-    apply plugin: 'ear'
-    dependencies {
-        deploy project(':web')
-    }
-    idea {
-        module {
-            iml {
-                withXml {
-                    def node = it.asNode()
-                    def f = new NodeBuilder()
-                    def facet = f.component(name: 'FacetManager') {
-                        facet(type: 'javaeeApplication', name: 'javaee') {
-                            configuration()
-                        }
-                    }
-                    node.append(facet)
-                }
-            }
-        }
-    }
-}
-
 idea {
     project {
         languageLevel = jdkLevel
@@ -121,15 +98,8 @@ idea {
                 def f = new NodeBuilder()
 
                 def component = f.component(name: 'ArtifactManager') {
-                    artifact(type: 'exploded-ear', name: 'javaee') {
-                        'output-path' "${projectDir}/out/artifacts/${file('project-name').text}"
-                        root(id: 'root') {
-                            element(id: 'javaee-facet-resources', facet: 'app/javaeeApplication/javaee')
-                            element(id: 'artifact', 'artifact-name': 'web')
-                        }
-                    }
                     artifact(type: 'exploded-war', name: 'web') {
-                        'output-path' "${projectDir}/out/artifacts/web"
+                        'output-path' "${projectDir}/out/artifacts/${file('project-name').text}"
                         root(id: 'root') {
                             element(id: 'javaee-facet-resources', facet:'web/web/Web')
                             element(id: 'directory', name: 'WEB-INF') {
