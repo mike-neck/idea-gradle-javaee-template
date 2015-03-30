@@ -133,7 +133,7 @@ idea {
                             option(name: 'modules') {
                                 set {
                                     option(value: projectDir)
-                                    [project(':app'), project(':jpa'), project(':web')].each {
+                                    [project(':jpa'), project(':web')].each {
                                         option(value: it.projectDir)
                                     }
                                 }
