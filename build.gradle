@@ -48,6 +48,26 @@ project(':jpa') {
     dependencies {
         compile 'javax:javaee-api:7.0'
     }
+    idea {
+        module {
+            iml {
+                withXml {
+                    def node = it.asNode()
+                    def f = new NodeBuilder()
+                    def facet = f.component(name: 'FacetManager') {
+                        facet(type: 'jpa', name: 'Jpa') {
+                            configuration {
+                                setting(name: 'validation-enabled', value: true)
+                                deploymentDescriptor(name: 'persistence.xml',
+                                        url: "file://${projectDir}/src/main/resources/META-INF/persistence.xml")
+                            }
+                        }
+                    }
+                    node.append(facet)
+                }
+            }
+        }
+    }
 }
 
 project(':web') {
