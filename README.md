@@ -40,4 +40,4 @@ jdbcDriver | String | a name of fully qualified class name of JDBC Driver | `org
 baseJdbcUrl | String | a base name of database url | `jdbc:h2:tcp://localhost:9092/~/h2`
 jdbcUser | String | user name of database | null
 jdbcPassword | String | password of the user | null
-jdbcProperties | Map | jpa's property key and value | becomes `<property name="key" value="value"/>`
+jdbcProperties | Map | jpa's property key and value |`[:]`
