@@ -20,7 +20,7 @@ generate persistence.xml
 
 To generate persistence.xml, add task with type `JpaPersistenceXml`.
 
-```groovy build.gradle
+```groovy
 task persistenceXml(type: JpaPersistenceXml) {
     baseJdbcUrl 'jdbc:h2:tcp://localhost:9092/~/h2database'
     jdbcUser 'sa'
